@@ -4,7 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>연제 운동 체크 앱</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2a7bff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="icon-192.png">
+
 <style>
+/* --- 기존 스타일 유지, 모바일 최적화 --- */
 body{font-family:sans-serif;margin:0;padding:5px;background:#000;color:#e0e0e0;}
 h2{text-align:center;color:#fff;margin:5px 0;font-size:1.2em;}
 .container{background:#1e1e1e;padding:5px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.5);margin-bottom:5px;}
@@ -70,10 +78,10 @@ footer{text-align:center;margin-top:5px;padding:2px;color:#888;font-size:0.7em;}
     background:white;
     color:#333;
     cursor:pointer;
-    font-size:0.6em; /* 달력 글씨 크기와 동일 */
+    font-size:0.6em;
 }
 .modal input{
-    font-size:0.6em; /* 달력 글씨 크기와 동일 */
+    font-size:0.6em;
     padding:2px;
     width:80%;
     margin-top:3px;
@@ -113,7 +121,7 @@ footer{text-align:center;margin-top:5px;padding:2px;color:#888;font-size:0.7em;}
 
 <footer>만든 사람 : <strong>Jaeho</strong></footer>
 
-<!-- 모달 확인 -->
+<!-- 모달 -->
 <div id="modalOverlay" class="modal-overlay">
   <div class="modal">
     <span id="modalMessage"></span><br>
@@ -131,6 +139,7 @@ footer{text-align:center;margin-top:5px;padding:2px;color:#888;font-size:0.7em;}
 </div>
 
 <script>
+// --- 기존 JS 코드 유지 ---
 const defaultExercises = [
     {name:"보강", sets:3},
     {name:"코어", sets:3},
@@ -144,11 +153,7 @@ const exerciseBody=document.getElementById("exerciseBody");
 const modalOverlay=document.getElementById("modalOverlay");
 const modalMessage=document.getElementById("modalMessage");
 document.getElementById("modalOkBtn").onclick=()=>modalOverlay.style.display="none";
-
-function showModal(msg){
-    modalMessage.textContent=msg;
-    modalOverlay.style.display="flex";
-}
+function showModal(msg){ modalMessage.textContent=msg; modalOverlay.style.display="flex"; }
 
 function createRow(ex){
     const tr=document.createElement("tr");
@@ -172,7 +177,6 @@ document.getElementById("addExerciseBtn").onclick = ()=>{
     addExerciseModal.style.display="flex";
     addExerciseInput.focus();
 };
-
 addExerciseOkBtn.onclick = ()=>{
     const name = addExerciseInput.value.trim();
     if(name){
@@ -183,7 +187,6 @@ addExerciseOkBtn.onclick = ()=>{
 };
 
 let selectedDate = null;
-
 function saveDay(){
     if(!selectedDate) return;
     let exercises=[];
@@ -195,7 +198,6 @@ function saveDay(){
     localStorage.setItem("exercise_"+selectedDate, JSON.stringify({exercises}));
     showModal("연제야 수고했어");
 }
-
 function loadDay(date){
     exerciseBody.innerHTML="";
     selectedDate=date;
@@ -212,7 +214,6 @@ function loadDay(date){
         }));
     });
 }
-
 function deleteDay(){
     if(!selectedDate) return;
     localStorage.removeItem("exercise_"+selectedDate);
@@ -260,16 +261,21 @@ document.getElementById("nextMonthBtn").onclick = ()=>{
     currentMonth++; if(currentMonth==13){ currentMonth=1; currentYear++; } renderCalendar(currentYear,currentMonth);
 };
 
-// 초기 로드
 const today=new Date();
 const todayStr = `${today.getFullYear()}-${(today.getMonth()+1).toString().padStart(2,"0")}-${today.getDate().toString().padStart(2,"0")}`;
 selectedDate = todayStr;
 loadDay(todayStr);
 renderCalendar(today.getFullYear(), today.getMonth()+1);
 
-// 버튼 이벤트
 document.getElementById("saveBtn").onclick=saveDay;
 document.getElementById("deleteBtn").onclick=deleteDay;
+
+// --- 서비스 워커 등록 ---
+if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('service-worker.js')
+    .then(()=>console.log('Service Worker 등록됨'))
+    .catch(err=>console.error('Service Worker 등록 실패',err));
+}
 </script>
 </body>
 </html>
