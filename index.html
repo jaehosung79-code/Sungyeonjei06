@@ -5,83 +5,176 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>연제 운동 체크 앱</title>
 
-<!-- PWA -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#2a7bff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="apple-touch-icon" href="icon-192.png">
 
 <style>
-body{font-family:sans-serif;margin:0;padding:3px;background:#000;color:#e0e0e0;}
-h2{text-align:center;color:#fff;margin:2px 0;font-size:0.9em;}
-.container{background:#1e1e1e;padding:3px;border-radius:6px;box-shadow:0 2px 5px rgba(0,0,0,0.5);margin-bottom:3px;}
-.date-row{display:flex;align-items:center;gap:2px;flex-wrap:wrap;margin-bottom:2px;}
-.action-btn{border:none;border-radius:6px;cursor:pointer;font-size:0.6em;padding:2px 2px;flex:1;text-align:center;}
-.delete-btn{background:#d9534f;color:white;}
-.add-btn{background:#ff9800;color:white;}
-.save-btn{padding:3px 5px;font-size:0.6em;border:none;border-radius:6px;cursor:pointer;background:#2a7bff;color:white;width:100%;margin-top:2px;}
-#exerciseContainer{overflow-y:auto;max-height:180px;}
-table{width:100%;border-collapse:separate;border-spacing:0;margin-top:2px;border:1px solid #555;border-radius:6px;overflow:hidden;font-size:0.6em;}
-th,td{border:1px solid #555;padding:2px;text-align:center;}
-th{background:#333;color:white;}
-tr{height:calc(1.3em*2);}
-input[type="checkbox"]{width:14px;height:14px;}
-footer{text-align:center;margin-top:3px;padding:2px;color:#888;font-size:0.6em;}
+html, body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #000;
+    color: #e0e0e0;
+    font-size: 1.2em; /* 전체 글자 20% 증가 */
+}
+
+/* 타이틀 30% 작게 */
+h2 {
+    text-align: center;
+    color: #fff;
+    margin: 6px 0;
+    font-size: 0.7em;
+}
+
+/* 공통 container */
+.container {
+    background: #1e1e1e;
+    padding: 6px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    margin: 6px;
+}
 
 /* 달력 */
-#monthNav{display:flex;justify-content:space-between;margin-bottom:2px;font-size:0.6em;}
-#monthNav button{cursor:pointer;padding:2px 3px;border-radius:4px;font-size:0.6em;}
-#calendar{
-    display:grid;
-    grid-template-columns:repeat(7,1fr);
-    gap:1px;
-    font-size:0.6em;
-    line-height:1.1;
+#monthNav {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    font-size: 0.8em;
 }
-.calendar-weekday{text-align:center;font-weight:bold;padding:1px 0;}
-.calendar-day{
-    padding:1px;
-    text-align:center;
-    background:#222;
-    border-radius:3px;
-    cursor:pointer;
-    border:1px solid transparent;
-    height:calc(1.3em*1.5);
-    display:flex;
-    align-items:center;
-    justify-content:center;
+#monthNav button {
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 4px;
 }
-.calendar-day.today{border-color:rgb(240,128,128);}
-.calendar-day.selected{border-color:rgb(192,192,192);}
-.calendar-day:hover{background:#444;}
+#calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    font-size: 0.8em;
+    line-height: 1.5;
+}
+.calendar-weekday {
+    text-align: center;
+    font-weight: bold;
+    padding: 2px 0;
+}
+.calendar-day {
+    padding: 2px;
+    text-align: center;
+    background: #222;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.calendar-day.today { border-color: rgb(240,128,128); }
+.calendar-day.selected { border-color: rgb(192,192,192); }
+.calendar-day:hover { background: #444; }
+
+/* 버튼 영역 */
+.date-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+}
+.action-btn {
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.72em;
+    padding: 6px;
+    flex: 1;
+    min-width: 100px;
+    text-align: center;
+}
+.delete-btn { background: #d9534f; color: white; }
+.add-btn { background: #ff9800; color: white; }
+.save-btn {
+    background: #2a7bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    padding: 6px;
+    margin-top: 4px;
+    font-size: 0.72em;
+}
+
+/* 운동 테이블 */
+#exerciseContainer {
+    max-height: none; /* 스크롤 제거 */
+    margin-top: 4px;
+}
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid #555;
+    border-radius: 6px;
+    overflow: hidden;
+    font-size: 0.72em;
+}
+th, td {
+    border: 1px solid #555;
+    padding: 8px;
+    text-align: center;
+}
+th { background: #333; color: white; }
+tr { height: 60px; } /* 높이 30% 증가 */
 
 /* 모달 */
-.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:1000;justify-content:center;align-items:center;}
-.modal{
-    background:#333;
-    color:white;
-    padding:8px;
-    border-radius:6px;
-    text-align:center;
-    min-width:150px;
-    box-shadow:0 4px 15px rgba(0,0,0,0.7);
-    font-size:0.6em;
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top:0; left:0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
 }
-.modal button{
-    margin-top:3px;
-    padding:2px 5px;
-    border:none;
-    border-radius:5px;
-    background:white;
-    color:#333;
-    cursor:pointer;
-    font-size:0.6em;
+.modal {
+    background: #333;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    min-width: 200px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.7);
+    font-size: 0.72em;
 }
-.modal input{
-    font-size:0.6em;
-    padding:2px;
-    width:80%;
-    margin-top:3px;
+.modal button {
+    margin-top: 6px;
+    padding: 4px 6px;
+    border: none;
+    border-radius: 5px;
+    background: white;
+    color: #333;
+    cursor: pointer;
+    font-size: 0.72em;
+}
+.modal input {
+    font-size: 0.72em;
+    padding: 4px;
+    width: 80%;
+    margin-top: 4px;
+}
+
+/* Footer 글자 50% 작게 */
+footer {
+    text-align: center;
+    margin-top: 4px;
+    color: #888;
+    font-size: 0.5em;
 }
 </style>
 </head>
@@ -89,6 +182,7 @@ footer{text-align:center;margin-top:3px;padding:2px;color:#888;font-size:0.6em;}
 
 <h2>연제 운동 체크 앱</h2>
 
+<!-- 달력 -->
 <div class="container">
     <div id="monthNav">
         <button id="prevMonthBtn">◀</button>
@@ -98,12 +192,14 @@ footer{text-align:center;margin-top:3px;padding:2px;color:#888;font-size:0.6em;}
     <div id="calendar"></div>
 </div>
 
+<!-- 버튼 -->
 <div class="container">
     <div class="date-row">
         <button class="action-btn delete-btn" id="deleteBtn">🗑 삭제</button>
         <button class="action-btn add-btn" id="addExerciseBtn">+ 운동 추가</button>
     </div>
 
+    <!-- 운동 테이블 -->
     <div id="exerciseContainer">
         <table>
             <thead>
@@ -116,7 +212,7 @@ footer{text-align:center;margin-top:3px;padding:2px;color:#888;font-size:0.6em;}
     <button class="save-btn" id="saveBtn">💾 저장하기</button>
 </div>
 
-<footer>만든 사람 : <strong>Jaeho</strong></footer>
+<footer>만든 사람 : <strong>연제빠</strong></footer>
 
 <!-- 모달 -->
 <div id="modalOverlay" class="modal-overlay">
@@ -136,6 +232,7 @@ footer{text-align:center;margin-top:3px;padding:2px;color:#888;font-size:0.6em;}
 </div>
 
 <script>
+// 기본 운동
 const defaultExercises = [
     {name:"보강", sets:3},
     {name:"코어", sets:3},
@@ -158,22 +255,15 @@ function createRow(ex){
         const isChecked = ex.checkedValues && ex.checkedValues[i] ? 'checked' : '';
         html+=`<td><input type="checkbox" data-name="${ex.name}_${i+1}" ${isChecked}></td>`;
     }
-
-    // 기본 운동이면 삭제 버튼 없음, 추가 운동이면 삭제 버튼 추가
     if(defaultExercises.find(def=>def.name===ex.name)){
         html+=`<td></td>`;
     } else {
         html+=`<td><button class="action-btn delete-btn" onclick="deleteExerciseRow(this)">X</button></td>`;
     }
-
     tr.innerHTML=html;
     return tr;
 }
-
-// 추가된 운동 삭제 함수
-function deleteExerciseRow(btn){
-    btn.closest("tr").remove();
-}
+function deleteExerciseRow(btn){ btn.closest("tr").remove(); }
 
 // +운동 추가 모달
 const addExerciseModal = document.getElementById("addExerciseModal");
@@ -278,7 +368,7 @@ renderCalendar(today.getFullYear(), today.getMonth()+1);
 document.getElementById("saveBtn").onclick=saveDay;
 document.getElementById("deleteBtn").onclick=deleteDay;
 
-// --- 서비스 워커 등록 ---
+// 서비스워커
 if('serviceWorker' in navigator){
     navigator.serviceWorker.register('service-worker.js')
     .then(()=>console.log('Service Worker 등록됨'))
